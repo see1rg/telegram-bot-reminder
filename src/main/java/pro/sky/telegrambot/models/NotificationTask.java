@@ -14,7 +14,6 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
-@RequiredArgsConstructor
 @AllArgsConstructor
 @NoArgsConstructor
 public class NotificationTask {
@@ -23,11 +22,14 @@ public class NotificationTask {
     @Column(name = "id")
     private int id;
     @Column(name = "chat_id")
-    private int chat_id;
-    @Column(name = "message_text")
-    private String message_text;
-    @Column(name = "date_time")
-    private LocalDateTime date_time;
+    private Long chatId;
+
+    @Column(name = "user_id")
+    private Long userId;
+    @Column(name = "task")
+    private String task;
+    @Column(name = "deadline")
+    private LocalDateTime deadline;
 
     @Override
     public boolean equals(Object o) {
