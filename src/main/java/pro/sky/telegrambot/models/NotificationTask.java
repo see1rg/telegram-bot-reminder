@@ -3,14 +3,12 @@ package pro.sky.telegrambot.models;
 import lombok.*;
 import org.hibernate.Hibernate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-@Entity(name = "notification_task_name")
+@Entity
+@Table(name = "notification_task_name", schema = "schema_bot")
 @Getter
 @Setter
 @ToString

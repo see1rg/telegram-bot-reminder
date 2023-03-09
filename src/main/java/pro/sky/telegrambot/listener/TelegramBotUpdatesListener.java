@@ -72,12 +72,15 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
             task.setChatId(update.message().chat().id());
             task.setTask(item);
             task.setDeadline(parseDate);
+            task.setUserId(update.message().from().id());
             // Сохраняем задачу в базе данных
             taskRepository.save(task);
             SendMessage confirmMessage = new SendMessage(task.getChatId(),
                     "Новое задание добавлено:\n" + task.getTask()
-                            + " на дату: \n" + task.getDeadline());
+                            + "\n на дату: \n" + task.getDeadline());
             telegramBot.execute(confirmMessage);
+            taskRepository.findAll().forEach(System.out::println);
+
         }
 
     }
