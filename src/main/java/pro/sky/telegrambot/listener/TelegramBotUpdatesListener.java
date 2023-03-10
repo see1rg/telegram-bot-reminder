@@ -34,7 +34,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     @Autowired
     private final TaskRepository taskRepository;
 
-    public TelegramBotUpdatesListener(TaskRepository taskRepository, TelegramBot telegramBot) {
+    public TelegramBotUpdatesListener(TaskRepository taskRepository, TelegramBot telegramBot ) {
         this.telegramBot = telegramBot;
         this.taskRepository = taskRepository;
     }
@@ -51,24 +51,26 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     }
 
     private BaseResponse sendMessage(long chatId, String text) {
-        SendMessage request = new SendMessage(chatId, "На текущее время у вас запланировано задание: \n" + text)
+        SendMessage request = new SendMessage(chatId,  text)
                 .parseMode(ParseMode.HTML)
                 .disableWebPagePreview(true)
                 .disableNotification(true);
         return telegramBot.execute(request);
     }
-
     @Scheduled(cron = "0 0/1 * * * *")
-    void findTaskCurrentTime() {
-        List<NotificationTask> tasksOnTime = new ArrayList<>();
-        tasksOnTime = taskRepository.findAll().stream()
-                .filter(task -> task.getDeadline().isEqual(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES)))
-                .collect(Collectors.toList());
-        for (NotificationTask task :
-                tasksOnTime) {
-            sendMessage(task.getChatId(), task.getTask());
+    void findTaskCurrentTime(){
+       List<NotificationTask> tasksOnTime = new ArrayList<>();
+        tasksOnTime =  taskRepository
+                .findByDeadline(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
+
+        for (NotificationTask task:
+             tasksOnTime) {
+            String message = String.format("На текущее время у вас запланировано задание: \n '%s' " , task.getTask());
+            sendMessage(task.getChatId(), message);
+            taskRepository.delete(task);
         }
     }
+
 
     private void accept(Update update) {
         logger.info("Processing update: {}", update);
