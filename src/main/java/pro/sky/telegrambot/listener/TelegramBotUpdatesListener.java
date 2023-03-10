@@ -9,17 +9,20 @@ import com.pengrad.telegrambot.response.BaseResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import pro.sky.telegrambot.models.NotificationTask;
 import pro.sky.telegrambot.repositories.TaskRepository;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Controller
 public class TelegramBotUpdatesListener implements UpdatesListener {
@@ -31,7 +34,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     @Autowired
     private final TaskRepository taskRepository;
 
-    public TelegramBotUpdatesListener(TaskRepository taskRepository, TelegramBot telegramBot ) {
+    public TelegramBotUpdatesListener(TaskRepository taskRepository, TelegramBot telegramBot) {
         this.telegramBot = telegramBot;
         this.taskRepository = taskRepository;
     }
@@ -48,11 +51,23 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     }
 
     private BaseResponse sendMessage(long chatId, String text) {
-        SendMessage request = new SendMessage(chatId, text)
+        SendMessage request = new SendMessage(chatId, "На текущее время у вас запланировано задание: \n" + text)
                 .parseMode(ParseMode.HTML)
                 .disableWebPagePreview(true)
                 .disableNotification(true);
         return telegramBot.execute(request);
+    }
+
+    @Scheduled(cron = "0 0/1 * * * *")
+    void findTaskCurrentTime() {
+        List<NotificationTask> tasksOnTime = new ArrayList<>();
+        tasksOnTime = taskRepository.findAll().stream()
+                .filter(task -> task.getDeadline().isEqual(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES)))
+                .collect(Collectors.toList());
+        for (NotificationTask task :
+                tasksOnTime) {
+            sendMessage(task.getChatId(), task.getTask());
+        }
     }
 
     private void accept(Update update) {
@@ -79,8 +94,6 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                     "Новое задание добавлено:\n" + task.getTask()
                             + "\n на дату: \n" + task.getDeadline());
             telegramBot.execute(confirmMessage);
-            taskRepository.findAll().forEach(System.out::println);
-
         }
 
     }
