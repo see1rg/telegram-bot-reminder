@@ -1,7 +1,6 @@
 package pro.sky.telegrambot.models;
 
 import lombok.*;
-import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -32,13 +31,13 @@ public class NotificationTask {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        if (!(o instanceof NotificationTask)) return false;
         NotificationTask that = (NotificationTask) o;
-        return getId() != 0 && Objects.equals(getId(), that.getId());
+        return id == that.id && Objects.equals(chatId, that.chatId) && Objects.equals(userId, that.userId) && Objects.equals(task, that.task) && Objects.equals(deadline, that.deadline);
     }
 
     @Override
     public int hashCode() {
-        return getClass().hashCode();
+        return Objects.hash(id, chatId, userId, task, deadline);
     }
 }
