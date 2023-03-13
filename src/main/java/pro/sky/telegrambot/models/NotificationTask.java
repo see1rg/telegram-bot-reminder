@@ -16,16 +16,14 @@ import java.util.Objects;
 public class NotificationTask {
     @Id
     @GeneratedValue
-    @Column(name = "id")
     private int id;
-    @Column(name = "chat_id")
+    @Column(name = "chat_id",nullable = false)
     private Long chatId;
-
-    @Column(name = "user_id")
+    @Column(name = "user_id",nullable = false)
     private Long userId;
-    @Column(name = "task")
+    @Column(nullable = false)
     private String task;
-    @Column(name = "deadline")
+    @Column(nullable = false)
     private LocalDateTime deadline;
 
     @Override

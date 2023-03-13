@@ -5,12 +5,12 @@ import com.pengrad.telegrambot.model.request.ParseMode;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.response.BaseResponse;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.scheduling.annotation.Schedules;
 import org.springframework.stereotype.Service;
 import pro.sky.telegrambot.models.NotificationTask;
 import pro.sky.telegrambot.services.TaskService;
 
 import java.util.List;
+
 @Service
 public class NotificationScheduler {
     private final TaskService taskService;
