@@ -19,7 +19,9 @@ public class TelegramBotConfiguration {
 
     @Bean
     public TelegramBot telegramBot() {
+        //возвращает экземпляр TelegramBot, созданный с помощью значения поля token.
         TelegramBot bot = new TelegramBot(token);
+        //удаляет все команды бота с помощью метода execute() и класса DeleteMyCommands.
         bot.execute(new DeleteMyCommands());
         return bot;
     }

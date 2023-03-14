@@ -32,9 +32,12 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     public void init() {
         telegramBot.setUpdatesListener(this);
     }
+    //  устанавливает данный класс в качестве слушателя обновлений.
 
     @Override
     public int process(List<Update> updates) {
+        // обрабатывает полученные обновления от Telegram Bot API
+        // и вызывает метод accept(Update update) для каждого обновления.
         try {
             updates.forEach(this::accept);
         } catch (Exception e) {
@@ -43,9 +46,21 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
         return UpdatesListener.CONFIRMED_UPDATES_ALL;
     }
 
-    private void accept(Update update) {
+    void accept(Update update) {
         log.debug("Processing update: " + update);
         String message = update.message().text();
+        // получает текст сообщения от пользователя
+        // проверяем, что сообщение не является картинкой
+
+        if (update.message().photo() != null
+                || update.message().sticker() != null
+                || update.message().video() != null
+                || update.message().audio() != null) {
+            SendMessage errorMessage = new SendMessage(update.message().chat().id(),
+                    "Извините, но я умею обрабатывать толко текст.");
+            telegramBot.execute(errorMessage);
+            return;
+        }
 
         Matcher matcher = TASK_PATTERN.matcher(message);
         if (matcher.matches()) {
@@ -65,6 +80,11 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                     "Новое задание добавлено:\n" + task.getTask()
                             + "\n на дату: \n" + task.getDeadline());
             telegramBot.execute(confirmMessage);
+        } else {
+            SendMessage errorMessage = new SendMessage(update.message().chat().id(),
+                    "Неверный формат сообщения. Правильный формат: " +
+                            "[дата в формате dd.MM.yyyy HH:mm] [текст задачи]");
+            telegramBot.execute(errorMessage);
         }
     }
 }
