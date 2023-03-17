@@ -57,7 +57,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                 || update.message().video() != null
                 || update.message().audio() != null) {
             SendMessage errorMessage = new SendMessage(update.message().chat().id(),
-                    "Извините, но я умею обрабатывать толко текст.");
+                    "Извините, но я умею обрабатывать только текст.");
             telegramBot.execute(errorMessage);
             return;
         }
