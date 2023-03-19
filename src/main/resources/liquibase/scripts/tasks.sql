@@ -1,9 +1,9 @@
 -- liquibase formatted sql
 
 -- changeset slyubimov:1
-create schema if not exists schema_bot
+create schema schema_bot
 
-    create table if not exists schema_bot.notification_task_name
+    create table schema_bot.notification_task_name
     (
         id       serial primary key,
         chat_id  bigint    not null,
