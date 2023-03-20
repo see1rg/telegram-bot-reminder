@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 
 import static org.mockito.Mockito.verify;
@@ -37,7 +38,7 @@ public class TelegramBotUpdatesListenerTest {
     public void testProcessWithValidTask() throws URISyntaxException, IOException {
 
         String json = Files.readString(
-                Path.of(TelegramBotUpdatesListenerTest.class.getResource("update.json").toURI()));
+                Paths.get(TelegramBotUpdatesListenerTest.class.getResource("update.json").toURI()));
         Update update = BotUtils.fromJson(json.replace("%text%", "/start"), Update.class);
 
         telegramBotUpdatesListener.process(Collections.singletonList(update));
@@ -46,7 +47,7 @@ public class TelegramBotUpdatesListenerTest {
         verify(telegramBot).execute(argumentCaptor.capture());
         SendMessage actual = argumentCaptor.getValue();
 
-        Assertions.assertThat(actual.getParameters().get("chat_id")).isEqualTo(update.message().chat().id());
+        Assertions.assertThat(actual.getParameters().get("chat_id")).isEqualTo(123L);
 //        Assertions.assertThat(actual.getParameters().get("chat_id")).isEqualTo(update.message().chat().id());
     }
 }

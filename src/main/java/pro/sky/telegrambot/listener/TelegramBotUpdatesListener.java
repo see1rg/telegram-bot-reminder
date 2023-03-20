@@ -3,6 +3,7 @@ package pro.sky.telegrambot.listener;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.Update;
+import com.pengrad.telegrambot.model.User;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.response.SendResponse;
 import lombok.extern.log4j.Log4j;
@@ -22,7 +23,8 @@ import java.util.regex.Pattern;
 public class TelegramBotUpdatesListener implements UpdatesListener {
     private final TelegramBot telegramBot;
     private final TaskService taskService;
-    private static final Pattern TASK_PATTERN = Pattern.compile("([\\d\\\\.:\\s]{16})(\\s)([А-яA-z\\s\\d,.!?;]+)");
+    private static final Pattern TASK_PATTERN = Pattern.compile(
+            "([\\d\\\\.:\\s]{16})(\\s)([А-яA-z\\s\\d,.!?;]+)");
 
     public TelegramBotUpdatesListener(TelegramBot telegramBot, TaskService taskService) {
         this.telegramBot = telegramBot;
@@ -49,16 +51,17 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
 
     void accept(Update update) {
         log.debug("Processing update: " + update);
-        String message = update.message().text();
-        Long chatId = update.message().chat().id();
+        String text = update.message().text();
+        User user = update.message().from();
+
         // получает текст сообщения от пользователя
 
         // проверяем, что сообщение не является картинкой
 
-        Matcher matcher = TASK_PATTERN.matcher(message);
+        Matcher matcher = TASK_PATTERN.matcher(text);
 
-        if("/start".equals(message)){
-        sendMessage(chatId,"""
+        if("/start".equals(text)){
+        sendMessage(user.id(), """
         Привет!
         Я помогу напомнить задачу. Отправь ее в формате: 
         dd.MM.yyyy HH:mm текст задачи
@@ -93,11 +96,11 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
         }
     }
 
-    private void sendMessage(Long chatId, String message){
+    private void sendMessage(long chatId, String message){
         SendMessage sendMessage = new SendMessage(chatId, message);
         SendResponse sendResponse = telegramBot.execute(sendMessage);
-        if(!sendResponse.isOk()){
-            log.debug("Error during sending message: {} " + sendResponse.description());
-        }
+//        if(!sendResponse.isOk()){
+//            log.debug("Error during sending message: {} " + sendResponse.description());
+//        }
     }
 }

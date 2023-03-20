@@ -18,9 +18,9 @@ public class NotificationTask {
     @GeneratedValue
     private int id;
     @Column(name = "chat_id",nullable = false)
-    private Long chatId;
+    private long chatId;
     @Column(name = "user_id",nullable = false)
-    private Long userId;
+    private long userId;
     @Column(nullable = false)
     private String task;
     @Column(nullable = false)

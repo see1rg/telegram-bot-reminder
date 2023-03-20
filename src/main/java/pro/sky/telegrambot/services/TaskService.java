@@ -1,7 +1,7 @@
 package pro.sky.telegrambot.services;
 
 import lombok.extern.log4j.Log4j;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pro.sky.telegrambot.models.NotificationTask;
 import pro.sky.telegrambot.repositories.TaskRepository;
@@ -11,7 +11,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Log4j
-@Component
+@Service
 public class TaskService {
     private final TaskRepository taskRepository;
 
@@ -20,9 +20,9 @@ public class TaskService {
     }
 
     @Transactional
-    public NotificationTask save(NotificationTask task) {
+    public void save(NotificationTask task) {
         log.debug("Requesting to save the task: " + task);
-        return taskRepository.save(task);
+        taskRepository.save(task);
     }
 
     @Transactional
@@ -31,7 +31,6 @@ public class TaskService {
         taskRepository.delete(task);
     }
 
-    @Transactional
     public List<NotificationTask> tasksOnTime() {
         log.debug("Requesting tasks on time: " + LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
         return taskRepository
